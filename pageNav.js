@@ -60,3 +60,9 @@ $(function(e) {
 		$("nav").removeClass("invisible");
 	}
 });
+
+$.fn.extend({ 
+	FullHtml:function() {
+		return this.clone().wrap("<p>").parent().html();
+	}
+});
