@@ -8,9 +8,9 @@
 			<a href='#' aria-label='Previous'>
 				<span aria-hidden='true'>&laquo;</span></a></li>";
 			for ($i = 1; $i <= $n; $i++) {
-				echo "<li id='pageNav$i'";
-				if($i == 1) echo " class='active'";
-				echo "><a href='#'>$i</a></li>";
+				echo "<li id='pageNav$i' class='pageNav";
+				if($i == 1) echo " active";
+				echo "'><a href='#'>$i</a></li>";
 			}
 			echo "<li id='nextPage'>
 			<a href='#' aria-label='Next'>
