@@ -2,10 +2,10 @@ $(function(e) {
 	
 	var index = 1;
 	var visPage = $("nav").data("vis");
-	var maxPage = $("nav li").length - 2;
+	var maxPage = $(".pageNav").length;
 	setPages();
 
-	$("nav").on("click touch", "li", function(e) {
+	$("nav").on("click touch", ".pageNav", function(e) {
 		var t = $(this);
 		if(t.is(".disabled, .active")) return false;
 
@@ -19,7 +19,7 @@ $(function(e) {
 			default:
 				index = t.find("a").text();
 		}
-		$("nav li").removeClass("active")
+		$(".pageNav").removeClass("active")
 		$("#pageNav" + index).addClass("active");
 		if(index != 1 && index != maxPage) {
 			$("nav li").removeClass("disabled");
@@ -33,7 +33,6 @@ $(function(e) {
 	});
 
 	function setPages() {
-		console.log("index:" + index);
 		var html = $("nav li").eq(0).FullHtml();
 		var cn = 0;
 		var icon = "<li class='disabled'><span class='glyphicon glyphicon-option-horizontal'></span></li>";
@@ -47,11 +46,11 @@ $(function(e) {
 				html += icon 
 				break;
 			}else if(i != index){
-				html += "<li id='pageNav" + i + "'><a href='#'>" + i + "</a></li>";
+				html += "<li id='pageNav" + i + "' class='pageNav'><a href='#'>" + i + "</a></li>";
 				cn++;
 				i++;
 			}else {
-				html += "<li id='pageNav" + i + "' class='active'><a href='#'>" + i + "</a></li>";
+				html += "<li id='pageNav" + i + "' class='pageNav active'><a href='#'>" + i + "</a></li>";
 				cn++;
 				i++;
 			}
