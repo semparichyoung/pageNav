@@ -1,73 +1,27 @@
-$(function(e) {
-
-	var index = 1;
-	var visPage = $("nav").data("vis");
-	var maxPage = $(".pageNav").length;
-	setPages();
-
-	$("nav").on("click touch", ".pageNav", function(e) {
-		var t = $(this);
-		if(t.is(".disabled, .active")) return false;
-
-		switch (t.attr("id")) {
-			case 'prePage':
-				index--;
-				break;
-			case 'nextPage':
-				index++;
-				break;
-			default:
-				index = t.find("a").text();
-		}
-		$(".pageNav").removeClass("active")
-			$("#pageNav" + index).addClass("active");
-		if(index != 1 && index != maxPage) {
-			$("nav li").removeClass("disabled");
-		}
-		if(index == 1) {
-			$("#prePage").addClass("disabled");
-		}else if(index == maxPage) {
-			$("#nextPage").addClass("disabled")
-		}
-		setPages();
-	});
-
-	function setPages() {
-		var html = $("nav li").eq(0).FullHtml();
-		var cn = 0;
-		var icon = "<li class='disabled'><span class='glyphicon glyphicon-option-horizontal'></span></li>";
-		var i = 1;
-		while (i < maxPage + 1) {
-			if(i < index - Math.ceil(visPage / 2) + 1 && html.indexOf("glyphicon") < 0) {
-				html += icon;
-				i = Math.min(index - Math.ceil(visPage / 2) + 1, maxPage - visPage + 1);
-				console.log("i:" + i);
-			}else if(cn >= visPage) {
-				html += icon 
-					break;
-			}else if(i != index){
-				html += "<li id='pageNav" + i + "' class='pageNav'><a href='#'>" + i + "</a></li>";
-				cn++;
-				i++;
-			}else {
-				html += "<li id='pageNav" + i + "' class='pageNav active'><a href='#'>" + i + "</a></li>";
-				cn++;
-				i++;
-			}
-		}
-		html += $("nav li").last().FullHtml();
-		$("nav ul").html(html);
-		$("nav").removeClass("invisible");
-	}
-});
-
 $.fn.extend({ 
 	pageNav:function(option) {
-		var maxPage = option.maxPage || this.length;
+		var target = this;
 		var visPage = option.visPage || 5;
 		var index = option.start || 1;
+		var maxPage;
+		if((typeof option.maxPage == "undefined" || typeof option.callback == "undefined") && (typeof option.content == "undefined" || typeof option.showNum == "undefined")) {
+			console.error("You need to set maxPage and callback both or set content and showNum both to run");
+			return false;
+		}else if(typeof option.content == "undefined" || typeof option.showNum == "undefined") {
+			maxPage = option.maxPage;
+		}else {
+			var showNum = option.showNum;
+			if(option.content.length < showNum) {
+				console.log("content number less than shown number");
+				maxPage = 1;
+				showNum = option.content.length;
+			}
+			maxPage = Math.ceil(option.content.length / showNum);
+		}
+		visPage = visPage > maxPage ? maxPage : visPage;
 
 		setPage();
+		setPageNav();
 
 		this.on("click touch", ".pageNav", function(e) {
 			var t = $(this);
@@ -81,10 +35,22 @@ $.fn.extend({
 				default:
 					index = t.attr("id").substr(7);
 			}
+			if(typeof option.callback == "function") {
+				option.callback(index);
+			}
 			setPage();
+			setPageNav();
 		});
-
 		function setPage() {
+			if(typeof option.content != "undefined" && typeof showNum != "undefined") {
+				console.log(showNum, option.content);
+				option.content.addClass("invisible");
+				for(var i = showNum * (index - 1); i < showNum * index; i++) {
+					option.content.eq(i).removeClass("invisible");
+				}
+			}
+		}
+		function setPageNav() {
 			var html = [];
 			html.push("<ul class='pagination'>",
 					"<li class='pageNav' id='prePage'>",
@@ -111,7 +77,16 @@ $.fn.extend({
 					"<a href='#' aria-label='Next'>",
 					"<span aria-hidden='true'>&raquo;</span>",
 					"</a></li></ul></nav>");
-			this.html(html.join(""));
+			if($.trim(target.html()) != "") {
+				if(target.is("nav")) {
+					target.html(html.join(""));
+				}else {
+					target.append("<nav>" + html.join("") + "</nav>");
+					target = target.children("nav");
+				}
+			}else {
+				target.html(html.join(""));
+			}
 			switch (index) {
 				case '1':
 					$("#prePage").addClass("disabled");
