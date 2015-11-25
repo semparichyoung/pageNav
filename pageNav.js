@@ -43,8 +43,9 @@ $.fn.extend({
 		});
 		function setPage() {
 			if(typeof option.content != "undefined" && typeof showNum != "undefined") {
-				console.log(showNum, option.content);
+				// console.log(showNum, option.content);
 				option.content.addClass("invisible");
+				console.log("show:" + (showNum * (index - 1)) + " to " + (showNum * index));
 				for(var i = showNum * (index - 1); i < showNum * index; i++) {
 					option.content.eq(i).removeClass("invisible");
 				}
@@ -60,8 +61,9 @@ $.fn.extend({
 			var cn = 0;
 			var icon = "<li class='disabled'><span class='glyphicon glyphicon-option-horizontal'></span></li>";
 			var i = 1;
-			while (i < maxPage + 1) {
-				if(i < index - Math.ceil(visPage / 2) + 1 && html.indexOf("glyphicon") < 0) {
+			var startTime = Date.now();
+			while (i < maxPage + 1 && Date.now() - startTime < 1000) {
+				if(i < index - Math.ceil(visPage / 2) + 1 && html.join("").indexOf("glyphicon") < 0) {
 					html.push(icon);
 					i = Math.min(index - Math.ceil(visPage / 2) + 1, maxPage - visPage + 1);
 				}else if(cn >= visPage) {
@@ -87,13 +89,13 @@ $.fn.extend({
 			}else {
 				target.html(html.join(""));
 			}
+			console.log("index:" + index);
 			switch (index) {
 				case '1':
 					$("#prePage").addClass("disabled");
 					break;
 				case maxPage:
 					$("#nextPage").addClass("disabled");
-					break;
 				default:
 					$("#pageNav" + index).addClass("active");
 			}
