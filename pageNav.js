@@ -32,6 +32,12 @@ $.fn.extend({
 				case 'nextPage':
 					index++;
 					break;
+				case 'fstPage':
+					index = 1;
+					break;
+				case 'lstPage':
+					index = maxPage;
+					break;
 				default:
 					index = t.attr("id").substr(7);
 			}
@@ -52,18 +58,23 @@ $.fn.extend({
 			}
 		}
 		function setPageNav() {
+			if(target.find("ul.pagination").length > 0) return false;
 			var html = [];
 			html.push("<ul class='pagination'>",
+					"<li class='pageNav' id='fstPage'>",
+					"<a href='#'>",
+					"<span class='glyphicon glyphicon-step-backward'></span></a></li>",
 					"<li class='pageNav' id='prePage'>",
 					"<a href='#' aria-label='Previous'>",
-					"<span aria-hidden='true'>&laquo;</span></a></li>");
+					"<span aria-hidden='true'>&laquo;</span></a></li>"
+					);
 
 			var cn = 0;
 			var icon = "<li class='disabled'><span class='glyphicon glyphicon-option-horizontal'></span></li>";
 			var i = 1;
 			var startTime = Date.now();
 			while (i < maxPage + 1 && Date.now() - startTime < 1000) {
-				if(i < index - Math.ceil(visPage / 2) + 1 && html.join("").indexOf("glyphicon") < 0) {
+				if(i < index - Math.ceil(visPage / 2) + 1 && html.join("").indexOf("glyphicon") < 0 && visPage != maxPage) {
 					html.push(icon);
 					i = Math.min(index - Math.ceil(visPage / 2) + 1, maxPage - visPage + 1);
 				}else if(cn >= visPage) {
@@ -78,6 +89,10 @@ $.fn.extend({
 			html.push("<li class='pageNav' id='nextPage'>",
 					"<a href='#' aria-label='Next'>",
 					"<span aria-hidden='true'>&raquo;</span>",
+					"</a></li>",
+					"<li class='pageNav' id='lstPage'>",
+					"<a href='#'>",
+					"<span class='glyphicon glyphicon-step-forward'></span>",
 					"</a></li></ul></nav>");
 			if($.trim(target.html()) != "") {
 				if(target.is("nav")) {
