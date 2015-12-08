@@ -25,7 +25,7 @@ $.fn.extend({
 
 		this.on("click touch", ".pageNav", function(e) {
 			var t = $(this);
-			switch (t.attr("id")) {
+			switch (t.attr("class").split(" ")[1]) {
 				case 'prePage':
 					index--;
 					break;
@@ -39,7 +39,7 @@ $.fn.extend({
 					index = maxPage;
 					break;
 				default:
-					index = t.attr("id").substr(7);
+					index = t.attr("data-pn");
 			}
 			var over = index < 1 ? "less" : index > maxPage ? "more" : "none"
 			index = Middle(1, index, maxPage);
@@ -62,10 +62,10 @@ $.fn.extend({
 		function setPageNav() {
 			var html = [];
 			html.push("<nav><ul class='pagination'>",
-					"<li class='pageNav' id='fstPage'>",
+					"<li class='pageNav fstPage'>",
 					"<a>",
 					"<span class='glyphicon glyphicon-step-backward'></span></a></li>",
-					"<li class='pageNav' id='prePage'>",
+					"<li class='pageNav prePage'>",
 					"<a aria-label='Previous'>",
 					"<span aria-hidden='true'>&laquo;</span></a></li>"
 					);
@@ -91,11 +91,11 @@ $.fn.extend({
 					i++;
 				}
 			}
-			html.push("<li class='pageNav' id='nextPage'>",
+			html.push("<li class='pageNav nextPage'>",
 					"<a aria-label='Next'>",
 					"<span aria-hidden='true'>&raquo;</span>",
 					"</a></li>",
-					"<li class='pageNav' id='lstPage'>",
+					"<li class='pageNav lstPage'>",
 					"<a>",
 					"<span class='glyphicon glyphicon-step-forward'></span>",
 					"</a></li></ul></nav>");
@@ -114,22 +114,31 @@ $.fn.extend({
 			target.find(".active").removeClass("active");
 			switch (index) {
 				case '1':
-					$("#prePage").addClass("disabled");
+					target.find(".prePage").addClass("disabled");
 					break;
 				case maxPage:
-					$("#nextPage").addClass("disabled");
+					target.find(".nextPage").addClass("disabled");
 				default:
-					$("#pageNav" + index).addClass("active");
+					$(".pageNav").pn(index).addClass("active");
 			}
 		}
 		function Middle(min, v, max) {
 			return v < min ? min : v > max ? max : v;
 		}
 		function pn(i) {
-			return "<li id='pageNav" + i + "' class='pageNav'><a>" + i + "</a></li>";
+			return "<li data-pn='" + i + "' class='pageNav'><a>" + i + "</a></li>";
 		}
 	},
 	FullHtml:function() {
 		return this.clone().wrap("<p>").parent().html();
 	},
+	pn:function(e) {
+		for (var i = 0, l = this.length; i < l; i++) {
+			var v = this.eq(i);
+			if(v.attr("data-pn") == e) {
+				return v;
+			}
+		}
+		return undefined;
+	}
 });
