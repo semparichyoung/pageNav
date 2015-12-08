@@ -41,8 +41,10 @@ $.fn.extend({
 				default:
 					index = t.attr("id").substr(7);
 			}
+			var over = index < 1 ? "less" : index > maxPage ? "more" : "none"
+			index = Middle(1, index, maxPage);
 			if(typeof option.callback == "function") {
-				option.callback(index);
+				option.callback(index, over);
 			}
 			setPage();
 			setPageNav();
@@ -51,21 +53,20 @@ $.fn.extend({
 			if(typeof option.content != "undefined" && typeof showNum != "undefined") {
 				// console.log(showNum, option.content);
 				option.content.addClass("invisible");
-				console.log("show:" + (showNum * (index - 1)) + " to " + (showNum * index));
+				// console.log("show:" + (showNum * (index - 1)) + " to " + (showNum * index));
 				for(var i = showNum * (index - 1); i < showNum * index; i++) {
 					option.content.eq(i).removeClass("invisible");
 				}
 			}
 		}
 		function setPageNav() {
-			if(target.find("ul.pagination").length > 0) return false;
 			var html = [];
-			html.push("<ul class='pagination'>",
+			html.push("<nav><ul class='pagination'>",
 					"<li class='pageNav' id='fstPage'>",
-					"<a href='#'>",
+					"<a>",
 					"<span class='glyphicon glyphicon-step-backward'></span></a></li>",
 					"<li class='pageNav' id='prePage'>",
-					"<a href='#' aria-label='Previous'>",
+					"<a aria-label='Previous'>",
 					"<span aria-hidden='true'>&laquo;</span></a></li>"
 					);
 
@@ -73,11 +74,15 @@ $.fn.extend({
 			var icon = "<li class='disabled'><span class='glyphicon glyphicon-option-horizontal'></span></li>";
 			var i = 1;
 			var startTime = Date.now();
+			var leftIcon = false;
+			// console.log("index:" + index);
 			while (i < maxPage + 1 && Date.now() - startTime < 1000) {
-				if(i < index - Math.ceil(visPage / 2) + 1 && html.join("").indexOf("glyphicon") < 0 && visPage != maxPage) {
+				// console.log("i:" + i , (i < index - Math.ceil(visPage / 2) + 1) , !leftIcon, visPage != maxPage);
+				if(i < index - Math.ceil(visPage / 2) + 1 && !leftIcon && visPage != maxPage) {
+					leftIcon = true;
 					html.push(icon);
 					i = Math.min(index - Math.ceil(visPage / 2) + 1, maxPage - visPage + 1);
-				}else if(cn >= visPage) {
+				}else if(cn >= visPage && visPage + 1 < maxPage) {
 					html.push(icon);
 					break;
 				}else {
@@ -87,24 +92,26 @@ $.fn.extend({
 				}
 			}
 			html.push("<li class='pageNav' id='nextPage'>",
-					"<a href='#' aria-label='Next'>",
+					"<a aria-label='Next'>",
 					"<span aria-hidden='true'>&raquo;</span>",
 					"</a></li>",
 					"<li class='pageNav' id='lstPage'>",
-					"<a href='#'>",
+					"<a>",
 					"<span class='glyphicon glyphicon-step-forward'></span>",
 					"</a></li></ul></nav>");
 			if($.trim(target.html()) != "") {
 				if(target.is("nav")) {
 					target.html(html.join(""));
 				}else {
-					target.append("<nav>" + html.join("") + "</nav>");
+					target.append(html.join(""));
 					target = target.children("nav");
 				}
 			}else {
 				target.html(html.join(""));
+				target = target.children("nav");
 			}
-			console.log("index:" + index);
+			// console.log("index:" + index);
+			target.find(".active").removeClass("active");
 			switch (index) {
 				case '1':
 					$("#prePage").addClass("disabled");
@@ -115,11 +122,14 @@ $.fn.extend({
 					$("#pageNav" + index).addClass("active");
 			}
 		}
+		function Middle(min, v, max) {
+			return v < min ? min : v > max ? max : v;
+		}
 		function pn(i) {
-			return "<li id='pageNav" + i + "' class='pageNav'><a href='#'>" + i + "</a></li>";
+			return "<li id='pageNav" + i + "' class='pageNav'><a>" + i + "</a></li>";
 		}
 	},
 	FullHtml:function() {
 		return this.clone().wrap("<p>").parent().html();
-	}
+	},
 });
