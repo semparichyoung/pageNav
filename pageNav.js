@@ -22,6 +22,9 @@ $.fn.extend({
 
 		setPage();
 		setPageNav();
+		if(maxPage <= 1) {
+			target.addClass("invisible");
+		}
 
 		this.on("click touch", ".pageNav", function(e) {
 			var t = $(this);
@@ -42,13 +45,19 @@ $.fn.extend({
 					index = t.attr("data-pn");
 			}
 			var over = index < 1 ? "less" : index > maxPage ? "more" : "none"
-			index = Middle(1, index, maxPage);
+				index = Middle(1, index, maxPage);
 			if(typeof option.callback == "function") {
 				option.callback(index, over);
 			}
 			setPage();
 			setPageNav();
+			if(maxPage <= 1) {
+				target.addClass("invisible");
+			}
 		});
+
+		return this;
+
 		function setPage() {
 			if(typeof option.content != "undefined" && typeof showNum != "undefined") {
 				// console.log(showNum, option.content);
