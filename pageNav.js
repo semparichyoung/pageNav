@@ -46,13 +46,13 @@ $.fn.extend({
 			}
 			var over = index < 1 ? "less" : index > maxPage ? "more" : "none"
 				index = Middle(1, index, maxPage);
-			if(typeof option.callback == "function") {
-				option.callback(index, over);
-			}
 			setPage();
 			setPageNav();
 			if(maxPage <= 1) {
 				target.addClass("invisible");
+			}
+			if(typeof option.callback == "function") {
+				option.callback(index, over);
 			}
 		});
 
